@@ -1,1 +1,9 @@
+.DS_Store
 
+# .emacs.d files
+.emacs.d/auto-save-list
+.emacs.d/straight
+.emacs.d/conf.d/init.el
+.emacs.d/ac-comphist.dat
+.emacs.d/network-security.data
+.emacs.d/recentf

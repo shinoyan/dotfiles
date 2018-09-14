@@ -1,0 +1,547 @@
+* 基本設定
+** 画面系
+*** 背景色
+    GUIモードの場合のみ読み込む
+    #+BEGIN_SRC emacs-lisp
+      (if window-system
+          (progn
+            (set-background-color "Black")
+            (set-foreground-color "LightGray")
+            (set-frame-parameter nil 'alpha 88)
+            ))
+    #+END_SRC
+
+*** 起動時のフレーム設定
+    #+BEGIN_SRC emacs-lisp
+      (setq initial-frame-alist
+         (append (list
+            '(top . 0)
+            '(left . 80)
+            '(width . 180)
+            '(height . 60))
+           initial-frame-alist))
+      (setq default-frame-alist initial-frame-alist)
+    #+END_SRC
+
+*** フォント・カーソル設定
+    #+BEGIN_SRC emacs-lisp
+      (if window-system
+          (progn
+            (set-frame-font "-*-Menlo-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1")
+            (set-cursor-color "#525252")
+            (blink-cursor-mode 0)
+            ))
+    #+END_SRC
+
+*** ツールバーを消す
+    #+BEGIN_SRC emacs-lisp
+      (if window-system
+          (progn
+            (tool-bar-mode -1)
+            ))
+    #+END_SRC
+
+** 機能系
+*** *.~などのバックアップファイルを作成しない
+   #+BEGIN_SRC emacs-lisp
+     (setq make-backup-files nil)
+   #+END_SRC
+
+*** オートインデントでスペースを使用する
+   #+BEGIN_SRC emacs-lisp
+     (setq-default indent-tabs-mode nil)
+   #+END_SRC
+
+*** clipboardをMacと共有
+   #+BEGIN_SRC emacs-lisp
+     (defun paste-to-osx (text &optional push)
+       (let ((process-connection-type nil))
+         (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+           (process-send-string proc text)
+           (process-send-eof proc))))
+     (setq interprogram-cut-function 'paste-to-osx)
+   #+END_SRC
+
+*** 折り返し設定
+   #+BEGIN_SRC emacs-lisp
+     (defun toggle-truncate-lines ()
+       "折り返し表示をトグル動作します."
+       (interactive)
+       (if truncate-lines
+           (setq truncate-lines nil)
+         (setq truncate-lines t))
+       (recenter))
+   #+END_SRC
+
+*** 括弧
+    - 対応する括弧を光らせる
+    - ウインドウ内に治らない時だけ括弧内も光らせる
+    #+BEGIN_SRC emacs-lisp
+      (show-paren-mode 1)
+      (setq show-paren-style 'mixed)
+    #+END_SRC
+*** 複数ウインドウの起動を禁止する
+    Finderからのファイルオープン時の挙動
+    #+BEGIN_SRC emacs-lisp
+      (setq ns-pop-up-frames nil)
+    #+END_SRC
+
+** 操作系
+*** C-zでウインドウの最小化表示の切り替えをさせない
+    #+BEGIN_SRC emacs-lisp
+      (global-unset-key (kbd "C-z"))
+    #+END_SRC
+*** multiframeの切り替え設定
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key "\C-xp" 'previous-multiframe-window)
+   #+END_SRC
+
+*** C-hでバックスペース
+   #+BEGIN_SRC emacs-lisp
+     (keyboard-translate ?\C-h ?\C-?)
+   #+END_SRC
+
+* ユーティリティ
+** eww
+*** 文字色を反映させない
+   #+BEGIN_SRC emacs-lisp
+     (defvar eww-disable-colorize t)
+     (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+       (unless eww-disable-colorize
+         (funcall orig start end fg)))
+     (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+     (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+     (defun eww-disable-color ()
+       "eww で文字色を反映させない"
+       (interactive)
+       (setq-local eww-disable-colorize t)
+       (eww-reload))
+     (defun eww-enable-color ()
+       "eww で文字色を反映させる"
+       (interactive)
+       (setq-local eww-disable-colorize nil)
+         (eww-reload))
+   #+END_SRC
+
+*** イメージを表示させない
+    #+BEGIN_SRC emacs-lisp
+      (defun shr-put-image-alt (spec alt &optional flags)
+        (insert alt))
+      (defun eww-mode-hook--disable-image ()
+        (setq-local shr-put-image-function 'shr-put-image-alt))
+      (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
+    #+END_SRC
+
+*** デフォルトの検索サイトをGoogleへ変更
+    #+BEGIN_SRC emacs-lisp
+      (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+    #+END_SRC
+
+** marked2
+*** \C-cmでMarked2でプレビュー
+    #+BEGIN_SRC emacs-lisp
+      (defun markdown-preview-file ()
+        "run Marked on the current file and revert the buffer"
+        (interactive)
+        (shell-command
+          (format "open -a /Applications/Marked.app %s"
+                  (shell-quote-argument (buffer-file-name)))
+          )
+        )
+      (global-set-key "\C-cm" 'markdown-preview-file)
+    #+END_SRC
+
+** exec-path-from-shell
+*** ロード
+    #+BEGIN_SRC emacs-lisp
+    (use-package exec-path-from-shell
+      :straight t)
+    #+END_SRC
+   PATHの設定を引き継ぐ
+   #+BEGIN_SRC emacs-lisp
+     (exec-path-from-shell-initialize)
+   #+END_SRC
+** set-eshell-aliases
+   eshellにaliaseの設定を行う
+   直接eshell-command-aliases-listに追加するのはNGらしい
+   http://d.hatena.ne.jp/sr10/20101125/1290664053
+   `.emacs.d/eshell/aliases`に追加
+   #+BEGIN_SRC emacs-lisp
+     (eval-after-load "em-alias"
+       '(progn (eshell/alias "ll" "ls -la")))
+   #+END_SRC
+** helm   
+*** ロード
+    #+BEGIN_SRC emacs-lisp
+    (use-package helm
+      :straight t
+      :config (helm-mode 1)
+      )
+    #+END_SRC
+*** helm-command-prefix-keyの置き換え
+    global-keyで`C-x c`を利用する場合はこれより後ろに設置する必要あり!
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c h") 'helm-command-prefix)
+      (global-unset-key (kbd "C-x c"))
+    #+END_SRC
+*** 補完キーの置き換え
+    従来通りTabで補完ができるように
+    #+BEGIN_SRC emacs-lisp
+      (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+      (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+      (define-key helm-map (kbd "C-z")  'helm-select-action)
+    #+END_SRC
+*** helm-M-x
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "M-x") 'helm-M-x)
+    #+END_SRC
+
+*** helm-mini
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-x b") 'helm-mini)
+      (setq helm-buffers-fuzzy-matching t
+            helm-recentf-fuzzy-match    t)
+    #+END_SRC
+
+*** helm-find-files
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    #+END_SRC
+*** helm-modeを有効にする
+    #+BEGIN_SRC emacs-lisp
+      (helm-mode 1)
+    #+END_SRC
+** helm-ghq
+*** ロード
+    #+BEGIN_SRC emacs-lisp
+    (use-package helm-ghq
+      :straight t)
+    #+END_SRC
+*** helm-ghqの呼び出し
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-x C-g") 'helm-ghq)
+    #+END_SRC
+
+** docker-tramp
+#+BEGIN_SRC emacs-lisp
+    (use-package docker-tramp
+      :straight t)
+    #+END_SRC
+*** ロード
+** s
+*** ロード
+    #+BEGIN_SRC emacs-lisp
+    (use-package s
+      :straight t)
+    #+END_SRC
+* エディタ
+** org-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package org
+     :straight t)
+    #+END_SRC
+
+*** キーバインド設定
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c a") 'org-agenda)
+      (global-set-key (kbd "C-c c") 'org-capture)
+      (global-set-key (kbd "C-c l") 'org-store-link)
+    #+END_SRC
+
+*** 拡張子`.org`を開いた際に、自動的にorg-modeを利用する。
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+    #+END_SRC
+
+*** orgディレクトリ
+    #+BEGIN_SRC emacs-lisp
+      (setq org-directory "~/Dropbox/org/")
+    #+END_SRC
+
+*** アジェンダ表示対象ファイル
+    #+BEGIN_SRC emacs-lisp
+      (setq org-agenda-files (list org-directory))
+    #+END_SRC
+
+*** キャプチャ用テンプレートの設定
+    #+BEGIN_SRC emacs-lisp
+      (setq org-capture-templates
+            '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
+               "* %? \n%[~/Dropbox/org/tmp/blogtmp.org]")
+              ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
+               "* TODO %?\n\n")
+              ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
+               "* %U %?\n")
+              )
+            )
+    #+END_SRC
+
+*** コードブロックをmodeに合わせてハイライト
+    #+BEGIN_SRC emacs-lisp
+      (setq org-src-fontify-natively t)
+    #+END_SRC
+
+*** 下付け・上付けを制御
+    #+BEGIN_SRC emacs-lisp
+      (setq org-export-with-sb-superscripts t)
+    #+END_SRC
+
+** howm-mode
+*** 基本設定
+    #+BEGIN_SRC emacs-lisp
+    (use-package howm
+      :straight t)
+      (add-to-list 'load-path "~/.emacs.d/straight/build/howm")
+      (setq howm-menu-lang 'ja)
+      (setq howm-directory "~/Dropbox/howm")
+      (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org")
+      (global-set-key "\C-c,," 'howm-menu)
+      (autoload 'howm-menu "howm" "Hitori Otegaru Wiki Modoki" t)
+    #+END_SRC
+
+*** 日報自動生成
+    #+BEGIN_SRC emacs-lisp
+      (setq dtmp-file "~/Dropbox/howm/daily/%Y/%m/%Y-%m-%d-daily.org")
+      (setq dtmp-template "~/Dropbox/org/tmp/daily-tmp.org")
+      (defun dtmp-generate ()
+        (let ((file (format-time-string dtmp-file)))
+          (when (not (file-exists-p file))
+            (let ((dir (file-name-directory file))
+                  (template (with-temp-buffer
+                              (insert-file-contents dtmp-template)
+                              (buffer-substring-no-properties (point-min)
+                                                              (point-max)))))
+              (make-directory dir t)
+              (let ((buf (find-file-noselect file)))
+                (with-current-buffer buf
+                  (insert (format-time-string template))
+                  (basic-save-buffer))
+                (kill-buffer buf))))))
+      (add-hook 'howm-mode-hook 'dtmp-generate)
+    #+END_SRC
+
+** markdown-mode
+*** 基本設定
+    #+BEGIN_SRC emacs-lisp
+      (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
+      (setq auto-mode-alist (cons '("\\.md" . gfm-mode) auto-mode-alist))
+
+      (add-hook 'gfm-mode-hook
+                '(lambda ()
+                   (setq global-linum-mode nil)
+                   (electric-indent-local-mode -1)))
+    #+END_SRC
+
+** yaml-mode
+   #+BEGIN_SRC emacs-lisp
+   (use-package yaml-mode
+     :straight t
+     :mode(("\\.yml\\'" . yaml-mode))
+     )
+   #+END_SRC
+** company-mode
+*** 参照
+    https://qiita.com/syohex/items/8d21d7422f14e9b53b17
+    https://qiita.com/sune2/items/b73037f9e85962f5afb7
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+    (use-package company
+      :straight t)
+    (global-company-mode +1)
+    #+END_SRC
+
+*** 色設定
+    #+BEGIN_SRC emacs-lisp
+    (set-face-attribute 'company-tooltip nil
+    :foreground "black" :background "lightgrey")
+    (set-face-attribute 'company-tooltip-common nil
+    :foreground "black" :background "lightgrey")
+    (set-face-attribute 'company-tooltip-common-selection nil
+    :foreground "white" :background "steelblue")
+    (set-face-attribute 'company-tooltip-selection nil
+    :foreground "black" :background "steelblue")
+    (set-face-attribute 'company-preview-common nil
+    :background nil :foreground "lightgrey" :underline t)
+    (set-face-attribute 'company-scrollbar-fg nil
+    :background "orange")
+    (set-face-attribute 'company-scrollbar-bg nil
+    :background "gray40")
+    #+END_SRC
+
+*** 利用するモード設定
+    #+BEGIN_SRC emacs-lisp
+    
+    #+END_SRC
+
+** auto complete
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+    ; (require 'auto-complete-config)
+    #+END_SRC
+
+*** auto-completeを利用するモード設定
+    #+BEGIN_SRC emacs-lisp
+    ; (ac-config-default)
+    ; (add-to-list 'ac-modes 'text-mode)
+    ; (add-to-list 'ac-modes 'fundamental-mode)
+    ; (add-to-list 'ac-modes 'org-mode)
+    ; (add-to-list 'ac-modes 'yatex-mode)
+    ; (add-to-list 'ac-modes 'coffee-mode)
+    ; (setq ac-auto-start t)
+    ; (ac-set-trigger-key "TAB")
+    #+END_SRC
+
+*** 補完メニュー表示
+    C-n/C-pで補完候補選択
+    #+BEGIN_SRC emacs-lisp
+    ; (setq ac-use-menu-map t)
+    #+END_SRC
+
+*** 曖昧マッチ
+    #+BEGIN_SRC emacs-lisp
+    ; (setq ac-use-fuzzy t)
+    #+END_SRC
+
+* プログラミング
+** magit
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package magit
+     :straight t)
+    #+END_SRC
+
+*** magitの呼び出し
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-x g") 'magit-status)
+    #+END_SRC
+
+** javascript-mode
+*** インデント設定
+    #+BEGIN_SRC emacs-lisp
+      (setq js-indent-level 2)
+      (setq js-switch-indent-offset 2)
+    #+END_SRC
+** coffee-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package coffee-mode
+     :straight t)
+    #+END_SRC
+*** インデント設定
+    #+BEGIN_SRC emacs-lisp
+      (defun coffee-custom ()
+        "coffee-mode-hook"
+        (set (make-local-variable 'tab-width) 2)
+        (setq coffee-tab-width 2))
+      (add-hook 'coffee-mode-hook
+                '(lambda() (coffee-custom)))
+    #+END_SRC
+
+** css-mode
+*** インデント設定
+    #+BEGIN_SRC emacs-lisp
+      (setq css-indent-offset 2)
+    #+END_SRC
+
+** scss-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package scss-mode
+     :straight t)
+    #+END_SRC
+** php-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package php-mode
+     :straight t)
+    #+END_SRC
+** markdown-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package markdown-mode
+     :straight t)
+    #+END_SRC
+
+** ediff
+*** コントロール用のバッファを同一フレーム内に表示
+    #+BEGIN_SRC emacs-lisp
+      (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+    #+END_SRC
+
+*** diffのバッファを左右に並べる
+    #+BEGIN_SRC emacs-lisp
+      (setq ediff-split-window-function 'split-window-horizontally)
+    #+END_SRC
+** dash-at-point
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package dash
+     :straight t)
+    #+END_SRC
+   emacsからDashを呼び出す
+   #+BEGIN_SRC emacs-lisp
+     (autoload 'dash-at-point "dash-at-point"
+               "Search the word at point with Dash." t nil)
+     (global-set-key "\C-cd" 'dash-at-point)
+   #+END_SRC
+
+** flycheck
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :straight t)
+    (add-hook 'after-init-hook #'global-flycheck-mode)
+    (eval-after-load 'flycheck
+    '(custom-set-variables
+    '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
+    ))
+    #+END_SRC
+
+*** node_modules/を利用する
+    #+BEGIN_SRC emacs-lisp
+    (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+    (or (buffer-file-name) default-directory)
+    "node_modules"))
+    (eslint (and root
+    (expand-file-name "node_modules/eslint/bin/eslint.js"
+    root))))
+    (when (and eslint (file-executable-p eslint))
+    (setq-local flycheck-javascript-eslint-executable eslint))))
+    (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+    #+END_SRC
+*** add-node-modules-path
+    https://melpa.org/#/add-node-modules-path
+    #+BEGIN_SRC emacs-lisp
+    (use-package add-node-modules-path
+      :straight t)
+    #+END_SRC    
+
+** editorconfig
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+    (use-package editorconfig
+      :straight t)
+    (editorconfig-mode 1)
+    #+END_SRC
+
+** rsjx-mode
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package rjsx-mode
+     :straight t)
+    #+END_SRC
+*** components, containersディレクトリ以下の.jsでも起動する
+    #+BEGIN_SRC emacs-lisp
+    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+    (add-to-list 'auto-mode-alist '("containers\\/.*\\.js\\'" . rjsx-mode))
+    #+END_SRC
+*** オブジェクト内の最後のカンマを許可
+    #+BEGIN_SRC emacs-lisp
+    (setq-default js2-strict-trailing-comma-warning nil)
+    #+END_SRC
+* 参考
+  init.elをorg-modeで記述するにあたり以下のページを参照
+  - http://blog.lambda-consulting.jp/2015/11/20/article/
+  - https://uwabami.junkhub.org/log/?date=20111213
