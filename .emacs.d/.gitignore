@@ -1,0 +1,11 @@
+# .emacs.d files
+.org-id-locations
+ac-comphist.dat
+bookmarks
+conf.d/init.el
+eshell/
+helm-doc.org
+straight/
+tramp
+tutorial/
+url/

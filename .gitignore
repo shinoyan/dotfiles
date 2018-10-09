@@ -1,7 +1,2 @@
 .DS_Store
 
-# .emacs.d files
-.emacs.d
-! .emacs.d/tpl/
-! .emacs.d/init.el
-! .emacs.d/conf.d/init.org

@@ -1,0 +1,7 @@
+:PROPERTIES:
+:OPTIONS:  toc:nil num:nil todo:nil pri:nil tags:nil ^:nil TeX:nil
+:POST_DATE: %U
+:CATEGORY: misc
+:ID: 
+:END:
+
