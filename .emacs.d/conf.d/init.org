@@ -268,7 +268,7 @@
     #+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
             '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
-               "* %? \n%[~/Dropbox/org/tmp/blogtmp.org]")
+               "* %? \n%[~/.emacs.d/tpl/blogtmp.org]")
               ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
                "* TODO %?\n\n")
               ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
@@ -303,7 +303,7 @@
 *** 日報自動生成
     #+BEGIN_SRC emacs-lisp
       (setq dtmp-file "~/Dropbox/howm/daily/%Y/%m/%Y-%m-%d-daily.org")
-      (setq dtmp-template "~/Dropbox/org/tmp/daily-tmp.org")
+      (setq dtmp-template "~/.emacs.d/tpl/daily-tmp.org")
       (defun dtmp-generate ()
         (let ((file (format-time-string dtmp-file)))
           (when (not (file-exists-p file))
