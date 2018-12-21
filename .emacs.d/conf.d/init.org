@@ -541,6 +541,20 @@
     #+BEGIN_SRC emacs-lisp
     (setq-default js2-strict-trailing-comma-warning nil)
     #+END_SRC
+** GoLang
+*** ロード処理
+    #+BEGIN_SRC emacs-lisp
+   (use-package go-mode
+     :straight t)
+    #+END_SRC
+*** スタイル
+    #+BEGIN_SRC emacs-lisp
+    (add-hook 'go-mode-hook (lambda()
+       (setq indent-tabs-mode nil)
+       (setq c-baseic-offset 4)
+       (setq tab-width 4)
+    ))
+    #+END_SRC
 * 参考
   init.elをorg-modeで記述するにあたり以下のページを参照
   - http://blog.lambda-consulting.jp/2015/11/20/article/
