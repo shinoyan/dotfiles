@@ -48,9 +48,14 @@ brew "rbenv"
 brew "ruby", link: true
 
 cask "alfred"
+cask "coda"
+cask "dash"
 cask "docker"
 cask "dropbox"
 cask "java8"
+cask "keep-it"
+cask "postman"
+cask "transmit"
 
 mas "1Password", id: 443987910
 mas "Marked 2", id: 890031187
