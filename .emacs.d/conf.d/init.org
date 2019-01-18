@@ -1,3 +1,14 @@
+* ヘッダコメント
+  #+BEGIN_SRC emacs-lisp
+  ;;; init.el --- Shinoyan's Emacs configuration
+  ;;; Commentary:
+  ;;; This is my personal Emacs configuration.
+  ;;; ../init.elの設定により、emacs起動時にinit.elに変換され
+  ;;; 必要なモジュールのインストールが実行される。
+
+  ;;; Code:
+  #+END_SRC
+
 * 基本設定
 ** 画面系
 *** 背景色
@@ -172,17 +183,11 @@
    #+END_SRC
 ** multi-term
    term-modeの拡張版
-*** ロード
-    #+BEGIN_SRC emacs-lisp
-    (use-package multi-term
-      :straight t)
-    #+END_SRC
-*** C-c tで起動
-    #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-c t") '(lambda()
-      (interactive)
-      (multi-term)))
-    #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+   (use-package multi-term
+     :bind (("C-c t" . multi-term))
+     :straight t)
+   #+END_SRC
 ** helm   
 *** ロード
     #+BEGIN_SRC emacs-lisp
@@ -252,52 +257,28 @@
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
    (use-package org
+     :bind (("C-c a" . org-agenda)
+            ("C-c c" . org-capture)
+            ("C-c l" . org-store-link))
+     :init
+     ;; orgディレクトリ
+     (setq org-directory "~/Dropbox/org/")
+     ;; アジェンダ表示対象ファイル
+     (setq org-agenda-files (list org-directory))
+     ;; コードブロックをmodeに合わせてハイライト
+     (setq org-src-fontify-natively t)
+     ;; 下付け・上付けを制御
+     (setq org-export-with-sb-superscripts t)
+     ;; キャプチャ用テンプレートの設定
+     (setq org-capture-templates
+       '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
+          "* %? \n%[~/.emacs.d/tpl/blogtmp.org]")
+         ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
+          "* TODO %?\n\n")
+         ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
+          "* %U %?\n")))
+     :mode (("\\.org$" . org-mode))
      :straight t)
-    #+END_SRC
-
-*** キーバインド設定
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c a") 'org-agenda)
-      (global-set-key (kbd "C-c c") 'org-capture)
-      (global-set-key (kbd "C-c l") 'org-store-link)
-    #+END_SRC
-
-*** 拡張子`.org`を開いた際に、自動的にorg-modeを利用する。
-    #+BEGIN_SRC emacs-lisp
-      (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-    #+END_SRC
-
-*** orgディレクトリ
-    #+BEGIN_SRC emacs-lisp
-      (setq org-directory "~/Dropbox/org/")
-    #+END_SRC
-
-*** アジェンダ表示対象ファイル
-    #+BEGIN_SRC emacs-lisp
-      (setq org-agenda-files (list org-directory))
-    #+END_SRC
-
-*** キャプチャ用テンプレートの設定
-    #+BEGIN_SRC emacs-lisp
-      (setq org-capture-templates
-            '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
-               "* %? \n%[~/.emacs.d/tpl/blogtmp.org]")
-              ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
-               "* TODO %?\n\n")
-              ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
-               "* %U %?\n")
-              )
-            )
-    #+END_SRC
-
-*** コードブロックをmodeに合わせてハイライト
-    #+BEGIN_SRC emacs-lisp
-      (setq org-src-fontify-natively t)
-    #+END_SRC
-
-*** 下付け・上付けを制御
-    #+BEGIN_SRC emacs-lisp
-      (setq org-export-with-sb-superscripts t)
     #+END_SRC
 
 ** howm-mode
@@ -337,13 +318,13 @@
 ** markdown-mode
 *** 基本設定
     #+BEGIN_SRC emacs-lisp
-      (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
-      (setq auto-mode-alist (cons '("\\.md" . gfm-mode) auto-mode-alist))
+    (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
+    (setq auto-mode-alist (cons '("\\.md" . gfm-mode) auto-mode-alist))
 
-      (add-hook 'gfm-mode-hook
-                '(lambda ()
-                   (setq global-linum-mode nil)
-                   (electric-indent-local-mode -1)))
+    (add-hook 'gfm-mode-hook
+              '(lambda ()
+                 (setq global-linum-mode nil)
+                 (electric-indent-local-mode -1)))
     #+END_SRC
 
 ** yaml-mode
@@ -418,16 +399,11 @@
 
 * プログラミング
 ** magit
-*** ロード処理
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
    (use-package magit
+     :bind (("C-x g" . magit-status))
      :straight t)
-    #+END_SRC
-
-*** magitの呼び出し
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-x g") 'magit-status)
-    #+END_SRC
+   #+END_SRC
 
 ** javascript-mode
 *** インデント設定
@@ -464,11 +440,11 @@
      :straight t)
     #+END_SRC
 ** php-mode
-*** ロード処理
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
    (use-package php-mode
-     :straight t)
-    #+END_SRC
+     :straight t
+     :mode(("\\.inc\\'" . php-mode)))
+   #+END_SRC
 ** markdown-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
@@ -572,3 +548,7 @@
   init.elをorg-modeで記述するにあたり以下のページを参照
   - http://blog.lambda-consulting.jp/2015/11/20/article/
   - https://uwabami.junkhub.org/log/?date=20111213
+* フッターコメント
+  #+BEGIN_SRC emacs-lisp
+  ;;; init.el ends here
+  #+END_SRC
