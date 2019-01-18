@@ -167,9 +167,22 @@
    http://d.hatena.ne.jp/sr10/20101125/1290664053
    `.emacs.d/eshell/aliases`に追加
    #+BEGIN_SRC emacs-lisp
-     (eval-after-load "em-alias"
-       '(progn (eshell/alias "ll" "ls -la")))
+   (eval-after-load "em-alias"
+     '(progn (eshell/alias "ll" "ls -la")))
    #+END_SRC
+** multi-term
+   term-modeの拡張版
+*** ロード
+    #+BEGIN_SRC emacs-lisp
+    (use-package multi-term
+      :straight t)
+    #+END_SRC
+*** C-c tで起動
+    #+BEGIN_SRC emacs-lisp
+    (global-set-key (kbd "C-c t") '(lambda()
+      (interactive)
+      (multi-term)))
+    #+END_SRC
 ** helm   
 *** ロード
     #+BEGIN_SRC emacs-lisp
