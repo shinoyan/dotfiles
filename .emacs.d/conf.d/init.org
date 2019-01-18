@@ -27,9 +27,9 @@
       (setq initial-frame-alist
          (append (list
             '(top . 0)
-            '(left . 80)
-            '(width . 180)
-            '(height . 60))
+            '(left . 70)
+            '(width . 210)
+            '(height . 70))
            initial-frame-alist))
       (setq default-frame-alist initial-frame-alist)
     #+END_SRC
@@ -186,6 +186,8 @@
    #+BEGIN_SRC emacs-lisp
    (use-package multi-term
      :bind (("C-c t" . multi-term))
+     :init
+     (setq multi-term-program "/bin/bash")
      :straight t)
    #+END_SRC
 ** helm   
@@ -254,8 +256,7 @@
     #+END_SRC
 * エディタ
 ** org-mode
-*** ロード処理
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
    (use-package org
      :bind (("C-c a" . org-agenda)
             ("C-c c" . org-capture)
@@ -331,8 +332,7 @@
    #+BEGIN_SRC emacs-lisp
    (use-package yaml-mode
      :straight t
-     :mode(("\\.yml\\'" . yaml-mode))
-     )
+     :mode (("\\.yml\\'" . yaml-mode)))
    #+END_SRC
 ** company-mode
 *** 参照
@@ -465,15 +465,13 @@
 ** dash-at-point
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package dash
-     :straight t)
+    (use-package dash-at-point
+      :bind (("C-c d" . dash-at-point))
+      :init
+      (autoload 'dash-at-point "dash-at-point"
+        "Search the word at point with Dash." t nil)
+      :straight t)
     #+END_SRC
-   emacsからDashを呼び出す
-   #+BEGIN_SRC emacs-lisp
-     (autoload 'dash-at-point "dash-at-point"
-               "Search the word at point with Dash." t nil)
-     (global-set-key "\C-cd" 'dash-at-point)
-   #+END_SRC
 
 ** flycheck
 *** ロード処理
@@ -531,19 +529,15 @@
     (setq-default js2-strict-trailing-comma-warning nil)
     #+END_SRC
 ** GoLang
-*** ロード処理
-    #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
    (use-package go-mode
-     :straight t)
-    #+END_SRC
-*** スタイル
-    #+BEGIN_SRC emacs-lisp
-    (add-hook 'go-mode-hook (lambda()
+     :init
+     (add-hook 'go-mode-hook (lambda()
        (setq indent-tabs-mode nil)
        (setq c-baseic-offset 4)
-       (setq tab-width 4)
-    ))
-    #+END_SRC
+       (setq tab-width 4)))
+     :straight t)
+   #+END_SRC
 * 参考
   init.elをorg-modeで記述するにあたり以下のページを参照
   - http://blog.lambda-consulting.jp/2015/11/20/article/
