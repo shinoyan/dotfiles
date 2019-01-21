@@ -2,10 +2,13 @@
 .org-id-locations
 ac-comphist.dat
 bookmarks
+auto-save-list/
 conf.d/init.el
 elpa/
 eshell/
 helm-doc.org
+network-security.data
+recentf
 straight/
 tramp
 tutorial/
