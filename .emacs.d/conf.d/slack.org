@@ -1,0 +1,39 @@
+* ヘッダコメント
+  #+BEGIN_SRC emacs-lisp
+  ;;; slack.el --- Shinoyan's Slack configuration
+  ;;; Commentary:
+  ;;; This is my personal Emacs configuration.
+  ;;; ../init.elの設定により、emacs起動時にslack.elに変換され
+  ;;; Slack関連の設定が行われる
+  ;;; クライアントIDは都度設定する。
+
+  ;;; Code:
+  #+END_SRC
+
+* emacs-slack
+  #+BEGIN_SRC emacs-lisp
+  (use-package slack
+    :straight t
+    :commands (slack-start)
+    :init
+    (setq slack-buffer-emojify nil)
+    (setq slack-prefer-current-team t)
+    :config
+    (slack-register-team
+     :name "name"
+     :client-id "id.id"
+     :client-secret "secret"
+     :token "token"
+     :subscribed-channels '(hoge)))
+  
+  (use-package alert
+    :straight t
+    :commands (alert)
+    :init
+    (setq alert-default-style 'notifier))
+  #+END_SRC
+
+* フッタコメント
+  #+BEGIN_SRC emacs-lisp
+  ;;; init.el ends here
+  #+END_SRC
