@@ -4,7 +4,6 @@ ac-comphist.dat
 bookmarks
 auto-save-list/
 conf.d/*.el
-conf.d/slack.org
 elpa/
 eshell/
 helm-doc.org
