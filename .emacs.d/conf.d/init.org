@@ -263,7 +263,8 @@
             ("C-c l" . org-store-link))
      :init
      ;; orgディレクトリ
-     (setq org-directory "~/Dropbox/org/")
+     (setq org-directory
+       (concat (file-name-as-directory dropbox-dir) "org/"))
      ;; アジェンダ表示対象ファイル
      (setq org-agenda-files (list org-directory))
      ;; コードブロックをmodeに合わせてハイライト
@@ -287,9 +288,10 @@
     #+BEGIN_SRC emacs-lisp
     (use-package howm
       :straight t)
-      (add-to-list 'load-path "~/.emacs.d/straight/build/howm")
+      (add-to-list 'load-path
+        (concat (file-name-as-directory user-emacs-directory) "straight/build/howm"))
       (setq howm-menu-lang 'ja)
-      (setq howm-directory "~/Dropbox/howm")
+      (setq howm-directory (concat (file-name-as-directory dropbox-dir) "howm"))
       (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org")
       (global-set-key "\C-c,," 'howm-menu)
       (autoload 'howm-menu "howm" "Hitori Otegaru Wiki Modoki" t)
@@ -297,8 +299,10 @@
 
 *** 日報自動生成
     #+BEGIN_SRC emacs-lisp
-      (setq dtmp-file "~/Dropbox/howm/daily/%Y/%m/%Y-%m-%d-daily.org")
-      (setq dtmp-template "~/.emacs.d/tpl/daily-tmp.org")
+      (setq dtmp-file
+        (concat (file-name-as-directory dropbox-dir) "/howm/daily/%Y/%m/%Y-%m-%d-daily.org"))
+      (setq dtmp-template
+        (concat (file-name-as-directory user-emacs-directory) "tpl/daily-tmp.org"))
       (defun dtmp-generate ()
         (let ((file (format-time-string dtmp-file)))
           (when (not (file-exists-p file))

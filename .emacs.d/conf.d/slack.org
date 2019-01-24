@@ -19,12 +19,7 @@
     (setq slack-buffer-emojify nil)
     (setq slack-prefer-current-team t)
     :config
-    (slack-register-team
-     :name "name"
-     :client-id "id.id"
-     :client-secret "secret"
-     :token "token"
-     :subscribed-channels '(hoge)))
+    (load-file (expand-file-name "slack-config.el" private-config-dir)))
   
   (use-package alert
     :straight t
@@ -35,5 +30,5 @@
 
 * フッタコメント
   #+BEGIN_SRC emacs-lisp
-  ;;; init.el ends here
+  ;;; slack.el ends here
   #+END_SRC
