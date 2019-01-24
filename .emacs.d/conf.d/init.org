@@ -165,8 +165,7 @@
 ** exec-path-from-shell
 *** ロード
     #+BEGIN_SRC emacs-lisp
-    (use-package exec-path-from-shell
-      :straight t)
+    (use-package exec-path-from-shell)
     #+END_SRC
    PATHの設定を引き継ぐ
    #+BEGIN_SRC emacs-lisp
@@ -187,14 +186,12 @@
    (use-package multi-term
      :bind (("C-c t" . multi-term))
      :init
-     (setq multi-term-program "/bin/bash")
-     :straight t)
+     (setq multi-term-program "/bin/bash"))
    #+END_SRC
 ** helm   
 *** ロード
     #+BEGIN_SRC emacs-lisp
     (use-package helm
-      :straight t
       :config (helm-mode 1)
       )
     #+END_SRC
@@ -235,21 +232,18 @@
 *** ロード
     #+BEGIN_SRC emacs-lisp
     (use-package helm-ghq
-      :bind (("C-x C-g" . helm-ghq))
-      :straight t)
+      :bind (("C-x C-g" . helm-ghq)))
     #+END_SRC
 
 ** docker-tramp
     #+BEGIN_SRC emacs-lisp
-    (use-package docker-tramp
-      :straight t)
+    (use-package docker-tramp)
     #+END_SRC
 *** ロード
 ** s
 *** ロード
     #+BEGIN_SRC emacs-lisp
-    (use-package s
-      :straight t)
+    (use-package s)
     #+END_SRC
 * エディタ
 ** org-mode
@@ -276,9 +270,8 @@
           "* TODO %?\n\n")
          ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
           "* %U %?\n")))
-     :mode (("\\.org$" . org-mode))
-     :straight t)
-    #+END_SRC
+     :mode (("\\.org$" . org-mode)))
+   #+END_SRC
 
 ** howm-mode
 *** 基本設定
@@ -289,8 +282,7 @@
       :config
       (setq howm-menu-lang 'ja)
       (setq howm-directory (concat (file-name-as-directory dropbox-dir) "howm"))
-      (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org")
-      :straight t)
+      (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org"))
     (add-to-list 'load-path
       (concat (file-name-as-directory user-emacs-directory) "straight/build/howm"))
     #+END_SRC
@@ -330,14 +322,12 @@
       (add-hook 'gfm-mode-hook
         '(lambda ()
         (setq global-linum-mode nil)
-        (electric-indent-local-mode -1)))
-      :straight t)
+        (electric-indent-local-mode -1))))
     #+END_SRC
 
 ** yaml-mode
    #+BEGIN_SRC emacs-lisp
    (use-package yaml-mode
-     :straight t
      :mode (("\\.yml\\'" . yaml-mode)))
    #+END_SRC
 ** company-mode
@@ -346,8 +336,7 @@
     https://qiita.com/sune2/items/b73037f9e85962f5afb7
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-    (use-package company
-      :straight t)
+    (use-package company)
     (global-company-mode +1)
     #+END_SRC
 
@@ -407,8 +396,7 @@
 ** magit
    #+BEGIN_SRC emacs-lisp
    (use-package magit
-     :bind (("C-x g" . magit-status))
-     :straight t)
+     :bind (("C-x g" . magit-status)))
    #+END_SRC
 
 ** javascript-mode
@@ -426,8 +414,7 @@
         '(lambda()
           (setq
             coffee-tab-width 2
-            tab-width 2)))
-      :straight t)
+            tab-width 2))))
     #+END_SRC
 
 ** css-mode
@@ -439,21 +426,18 @@
 ** scss-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package scss-mode
-     :straight t)
+   (use-package scss-mode)
     #+END_SRC
 ** php-mode
    #+BEGIN_SRC emacs-lisp
    (use-package php-mode
-     :straight t
      :mode(("\\.inc\\'" . php-mode)
            ("\\.php\\'" . php-mode)))
    #+END_SRC
 ** markdown-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package markdown-mode
-     :straight t)
+   (use-package markdown-mode)
     #+END_SRC
 
 ** ediff
@@ -473,16 +457,14 @@
       :bind (("C-c d" . dash-at-point))
       :init
       (autoload 'dash-at-point "dash-at-point"
-        "Search the word at point with Dash." t nil)
-      :straight t)
+        "Search the word at point with Dash." t nil))
     #+END_SRC
 
 ** flycheck
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
     (use-package flycheck
-      :init (add-hook 'after-init-hook #'global-flycheck-mode)
-      :straight t)
+      :init (add-hook 'after-init-hook #'global-flycheck-mode))
     (eval-after-load 'flycheck
       '(custom-set-variables
       '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))))
@@ -501,23 +483,20 @@
 *** add-node-modules-path
     https://melpa.org/#/add-node-modules-path
     #+BEGIN_SRC emacs-lisp
-    (use-package add-node-modules-path
-      :straight t)
+    (use-package add-node-modules-path)
     #+END_SRC    
 
 ** editorconfig
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
     (use-package editorconfig
-      :config (editorconfig-mode 1)
-      :straight t)
+      :config (editorconfig-mode 1))
     #+END_SRC
 
 ** rsjx-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package rjsx-mode
-     :straight t)
+   (use-package rjsx-mode)
     #+END_SRC
 *** components, containersディレクトリ以下の.jsでも起動する
     #+BEGIN_SRC emacs-lisp
@@ -535,8 +514,7 @@
      (add-hook 'go-mode-hook (lambda()
        (setq indent-tabs-mode nil)
        (setq c-baseic-offset 4)
-       (setq tab-width 4)))
-     :straight t)
+       (setq tab-width 4))))
    #+END_SRC
 * 参考
   init.elをorg-modeで記述するにあたり以下のページを参照

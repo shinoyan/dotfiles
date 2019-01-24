@@ -13,7 +13,6 @@
 * emacs-slack
   #+BEGIN_SRC emacs-lisp
   (use-package slack
-    :straight t
     :commands (slack-start)
     :init
     (setq slack-buffer-emojify nil)
@@ -22,7 +21,6 @@
     (load-file (expand-file-name "slack-config.el" private-config-dir)))
   
   (use-package alert
-    :straight t
     :commands (alert)
     :init
     (setq alert-default-style 'notifier))
