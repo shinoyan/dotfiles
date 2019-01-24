@@ -235,15 +235,12 @@
 *** ロード
     #+BEGIN_SRC emacs-lisp
     (use-package helm-ghq
+      :bind (("C-x C-g" . helm-ghq))
       :straight t)
-    #+END_SRC
-*** helm-ghqの呼び出し
-    #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-x C-g") 'helm-ghq)
     #+END_SRC
 
 ** docker-tramp
-#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
     (use-package docker-tramp
       :straight t)
     #+END_SRC
@@ -287,49 +284,54 @@
 *** 基本設定
     #+BEGIN_SRC emacs-lisp
     (use-package howm
-      :straight t)
-      (add-to-list 'load-path
-        (concat (file-name-as-directory user-emacs-directory) "straight/build/howm"))
+      :bind (("\C-c,," . howm-menu))
+      :commands (howm-menu)
+      :config
       (setq howm-menu-lang 'ja)
       (setq howm-directory (concat (file-name-as-directory dropbox-dir) "howm"))
       (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org")
-      (global-set-key "\C-c,," 'howm-menu)
-      (autoload 'howm-menu "howm" "Hitori Otegaru Wiki Modoki" t)
+      :straight t)
+    (add-to-list 'load-path
+      (concat (file-name-as-directory user-emacs-directory) "straight/build/howm"))
     #+END_SRC
 
 *** 日報自動生成
     #+BEGIN_SRC emacs-lisp
-      (setq dtmp-file
-        (concat (file-name-as-directory dropbox-dir) "/howm/daily/%Y/%m/%Y-%m-%d-daily.org"))
-      (setq dtmp-template
-        (concat (file-name-as-directory user-emacs-directory) "tpl/daily-tmp.org"))
-      (defun dtmp-generate ()
-        (let ((file (format-time-string dtmp-file)))
-          (when (not (file-exists-p file))
-            (let ((dir (file-name-directory file))
-                  (template (with-temp-buffer
-                              (insert-file-contents dtmp-template)
-                              (buffer-substring-no-properties (point-min)
-                                                              (point-max)))))
-              (make-directory dir t)
-              (let ((buf (find-file-noselect file)))
-                (with-current-buffer buf
-                  (insert (format-time-string template))
-                  (basic-save-buffer))
-                (kill-buffer buf))))))
-      (add-hook 'howm-mode-hook 'dtmp-generate)
+    (setq dtmp-file
+      (concat (file-name-as-directory dropbox-dir) "/howm/daily/%Y/%m/%Y-%m-%d-daily.org"))
+    (setq dtmp-template
+      (concat (file-name-as-directory user-emacs-directory) "tpl/daily-tmp.org"))
+    (defun dtmp-generate ()
+      (let ((file (format-time-string dtmp-file)))
+        (when (not (file-exists-p file))
+          (let ((dir (file-name-directory file))
+                (template (with-temp-buffer
+                            (insert-file-contents dtmp-template)
+                            (buffer-substring-no-properties (point-min)
+                                                            (point-max)))))
+            (make-directory dir t)
+            (let ((buf (find-file-noselect file)))
+              (with-current-buffer buf
+                (insert (format-time-string template))
+                (basic-save-buffer))
+              (kill-buffer buf))))))
+    (add-hook 'howm-mode-hook 'dtmp-generate)
     #+END_SRC
 
 ** markdown-mode
 *** 基本設定
     #+BEGIN_SRC emacs-lisp
-    (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
-    (setq auto-mode-alist (cons '("\\.md" . gfm-mode) auto-mode-alist))
-
-    (add-hook 'gfm-mode-hook
-              '(lambda ()
-                 (setq global-linum-mode nil)
-                 (electric-indent-local-mode -1)))
+    (use-package markdown-mode
+      :commands (markdown-mode gfm-mode)
+      :mode (("README\\.md\\'" . gfm-mode)
+             ("\\.md\\'" . markdown-mode))
+      :init
+      (setq markdown-command "multimarkdown")
+      (add-hook 'gfm-mode-hook
+        '(lambda ()
+        (setq global-linum-mode nil)
+        (electric-indent-local-mode -1)))
+      :straight t)
     #+END_SRC
 
 ** yaml-mode
@@ -418,23 +420,20 @@
 ** coffee-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package coffee-mode
-     :straight t)
-    #+END_SRC
-*** インデント設定
-    #+BEGIN_SRC emacs-lisp
-      (defun coffee-custom ()
-        "coffee-mode-hook"
-        (set (make-local-variable 'tab-width) 2)
-        (setq coffee-tab-width 2))
+    (use-package coffee-mode
+      :init
       (add-hook 'coffee-mode-hook
-                '(lambda() (coffee-custom)))
+        '(lambda()
+          (setq
+            coffee-tab-width 2
+            tab-width 2)))
+      :straight t)
     #+END_SRC
 
 ** css-mode
 *** インデント設定
     #+BEGIN_SRC emacs-lisp
-      (setq css-indent-offset 2)
+    (setq css-indent-offset 2)
     #+END_SRC
 
 ** scss-mode
@@ -447,7 +446,8 @@
    #+BEGIN_SRC emacs-lisp
    (use-package php-mode
      :straight t
-     :mode(("\\.inc\\'" . php-mode)))
+     :mode(("\\.inc\\'" . php-mode)
+           ("\\.php\\'" . php-mode)))
    #+END_SRC
 ** markdown-mode
 *** ロード処理
@@ -459,12 +459,12 @@
 ** ediff
 *** コントロール用のバッファを同一フレーム内に表示
     #+BEGIN_SRC emacs-lisp
-      (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+    (setq ediff-window-setup-function 'ediff-setup-windows-plain)
     #+END_SRC
 
 *** diffのバッファを左右に並べる
     #+BEGIN_SRC emacs-lisp
-      (setq ediff-split-window-function 'split-window-horizontally)
+    (setq ediff-split-window-function 'split-window-horizontally)
     #+END_SRC
 ** dash-at-point
 *** ロード処理
@@ -481,25 +481,21 @@
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
     (use-package flycheck
+      :init (add-hook 'after-init-hook #'global-flycheck-mode)
       :straight t)
-    (add-hook 'after-init-hook #'global-flycheck-mode)
     (eval-after-load 'flycheck
-    '(custom-set-variables
-    '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
-    ))
+      '(custom-set-variables
+      '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))))
     #+END_SRC
 
 *** node_modules/を利用する
     #+BEGIN_SRC emacs-lisp
     (defun my/use-eslint-from-node-modules ()
-    (let* ((root (locate-dominating-file
-    (or (buffer-file-name) default-directory)
-    "node_modules"))
-    (eslint (and root
-    (expand-file-name "node_modules/eslint/bin/eslint.js"
-    root))))
-    (when (and eslint (file-executable-p eslint))
-    (setq-local flycheck-javascript-eslint-executable eslint))))
+      (let* ((root (locate-dominating-file
+        (or (buffer-file-name) default-directory) "node_modules"))
+        (eslint (and root (expand-file-name "node_modules/eslint/bin/eslint.js" root))))
+        (when (and eslint (file-executable-p eslint))
+          (setq-local flycheck-javascript-eslint-executable eslint))))
     (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
     #+END_SRC
 *** add-node-modules-path
@@ -513,8 +509,8 @@
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
     (use-package editorconfig
+      :config (editorconfig-mode 1)
       :straight t)
-    (editorconfig-mode 1)
     #+END_SRC
 
 ** rsjx-mode
