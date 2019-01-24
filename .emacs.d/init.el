@@ -27,6 +27,9 @@
      :straight t)
 (defvar my-config-dir (concat user-emacs-directory "conf.d/"))
 (org-babel-load-file (expand-file-name "init.org" my-config-dir))
+;;; slack.orgが存在する場合はコンパイル
+(if (file-exists-p (expand-file-name "slack.org" my-config-dir))
+  (org-babel-load-file (expand-file-name "slack.org" my-config-dir)))
 
 (provide 'init)
 ;;; init.el ends here
