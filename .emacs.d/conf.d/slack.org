@@ -30,5 +30,5 @@
 
 * フッタコメント
   #+BEGIN_SRC emacs-lisp
-  ;;; init.el ends here
+  ;;; slack.el ends here
   #+END_SRC
