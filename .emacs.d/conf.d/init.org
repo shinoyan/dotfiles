@@ -458,8 +458,8 @@
 ** php-mode
    #+BEGIN_SRC emacs-lisp
    (use-package php-mode
-     :mode(("\\.inc\\'" . php-mode)
-           ("\\.php\\'" . php-mode)))
+     :mode (("\\.inc\\'" . php-mode)
+            ("\\.php\\'" . php-mode)))
    #+END_SRC
 ** markdown-mode
 *** ロード処理
@@ -490,11 +490,10 @@
 ** flycheck
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-    (use-package flycheck
-      :init (add-hook 'after-init-hook #'global-flycheck-mode))
-    (eval-after-load 'flycheck
-      '(custom-set-variables
-      '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))))
+      (use-package flycheck
+        :init (add-hook 'after-init-hook #'global-flycheck-mode)
+        :config
+        (setq-default flycheck-disabled-checkers '(javascript-jshint javascript-jscs)))
     #+END_SRC
 
 *** node_modules/を利用する
@@ -523,16 +522,11 @@
 ** rsjx-mode
 *** ロード処理
     #+BEGIN_SRC emacs-lisp
-   (use-package rjsx-mode)
-    #+END_SRC
-*** components, containersディレクトリ以下の.jsでも起動する
-    #+BEGIN_SRC emacs-lisp
-    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
-    (add-to-list 'auto-mode-alist '("containers\\/.*\\.js\\'" . rjsx-mode))
-    #+END_SRC
-*** オブジェクト内の最後のカンマを許可
-    #+BEGIN_SRC emacs-lisp
-    (setq-default js2-strict-trailing-comma-warning nil)
+      (use-package rjsx-mode
+        :mode (("components\\/.*\\.js\\'" . rjsx-mode)
+               ("containers\\/.*\\.js\\'" . rjsx-mode))
+        :config
+        (setq-default js2-strict-trailing-comma-warning nil))
     #+END_SRC
 ** GoLang
    #+BEGIN_SRC emacs-lisp
