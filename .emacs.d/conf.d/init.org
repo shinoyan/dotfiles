@@ -180,6 +180,33 @@
    (eval-after-load "em-alias"
      '(progn (eshell/alias "ll" "ls -la")))
    #+END_SRC
+
+** all-the-icons
+   https://github.com/domtronn/all-the-icons.el
+   #+BEGIN_SRC emacs-lisp
+     (use-package all-the-icons)
+   #+END_SRC
+** neotree
+   ディレクトリツリーを表示
+   #+BEGIN_SRC emacs-lisp
+     (use-package neotree
+       :bind (("C-q" . neotree-toggle))
+       :init
+       (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+       :config
+       (setq neo-autorefresh t)
+       (setq neo-show-hidden-files t)
+       (bind-key "M-w" 'my/neotree-kill-filename-at-point neotree-mode-map))
+   #+END_SRC
+   ポインタがある場所のフルパスをコピーする
+   #+BEGIN_SRC emacs-lisp
+     (defun my/neotree-kill-filename-at-point ()
+       "Kill full path of note at point."
+       (interactive)
+       (message "Copy %s"
+                (kill-new (neo-buffer--get-filename-current-line))))
+   #+END_SRC
+
 ** multi-term
    term-modeの拡張版
    #+BEGIN_SRC emacs-lisp
