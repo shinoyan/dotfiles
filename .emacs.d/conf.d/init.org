@@ -12,6 +12,7 @@
 * 基本設定
 ** 画面系
 *** エンコーディング
+*** encoding
     #+BEGIN_SRC emacs-lisp
       (setenv "LANG" "ja_JP.UTF-8")
     #+END_SRC
