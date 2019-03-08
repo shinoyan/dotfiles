@@ -245,7 +245,7 @@
      (use-package neotree
        :bind (("C-q" . neotree-toggle))
        :init
-       (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+       (setq neo-theme (if (display-graphic-p) 'icons))
        :config
        (setq neo-autorefresh t)
        (setq neo-show-hidden-files t)
@@ -328,29 +328,33 @@
 * エディタ
 ** org-mode
    #+BEGIN_SRC emacs-lisp
-   (use-package org
-     :bind (("C-c a" . org-agenda)
-            ("C-c c" . org-capture)
-            ("C-c l" . org-store-link))
-     :init
-     ;; orgディレクトリ
-     (setq org-directory
-       (concat (file-name-as-directory dropbox-dir) "org/"))
-     ;; アジェンダ表示対象ファイル
-     (setq org-agenda-files (list org-directory))
-     ;; コードブロックをmodeに合わせてハイライト
-     (setq org-src-fontify-natively t)
-     ;; 下付け・上付けを制御
-     (setq org-export-with-sb-superscripts t)
-     ;; キャプチャ用テンプレートの設定
-     (setq org-capture-templates
-       '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
-          "* %? \n%[~/.emacs.d/tpl/blogtmp.org]")
-         ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
-          "* TODO %?\n\n")
-         ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
-          "* %U %?\n")))
-     :mode (("\\.org$" . org-mode)))
+     (use-package org
+       :config
+       ;; org-tempoを有効にする
+       (use-package org-tempo
+         :straight nil)
+       :bind (("C-c a" . org-agenda)
+              ("C-c c" . org-capture)
+              ("C-c l" . org-store-link))
+       :init
+       ;; orgディレクトリ
+       (setq org-directory
+         (concat (file-name-as-directory dropbox-dir) "org/"))
+       ;; アジェンダ表示対象ファイル
+       (setq org-agenda-files (list org-directory))
+       ;; コードブロックをmodeに合わせてハイライト
+       (setq org-src-fontify-natively t)
+       ;; 下付け・上付けを制御
+       (setq org-export-with-sb-superscripts t)
+       ;; キャプチャ用テンプレートの設定
+       (setq org-capture-templates
+         '(("b" "Blog" entry (file+headline (concat org-directory "blog.org") "Drafts")
+            "* %? \n%[~/.emacs.d/tpl/blogtmp.org]")
+           ("t" "Todo" entry (file+headline (concat org-directory "todo.org") "予定")
+            "* TODO %?\n\n")
+           ("w" "twitter" entry (file+headline (concat org-directory "twitter.org") "つぶやき")
+            "* %U %?\n")))
+       :mode (("\\.org$" . org-mode)))
    #+END_SRC
 
 ** howm-mode
