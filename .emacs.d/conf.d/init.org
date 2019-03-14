@@ -16,7 +16,7 @@
     #+BEGIN_SRC emacs-lisp
       (setenv "LANG" "ja_JP.UTF-8")
     #+END_SRC
-*** 背景色
+*** 背景色・カーソル・ツールバー
     GUIモードの場合のみ読み込む
     #+BEGIN_SRC emacs-lisp
       (if window-system
@@ -24,7 +24,9 @@
             (set-background-color "Black")
             (set-foreground-color "LightGray")
             (set-frame-parameter nil 'alpha 88)
-            ))
+            (set-cursor-color "#525252")
+            (blink-cursor-mode 0) ; カーソルを点滅させない
+            (tool-bar-mode -1)))    ; Toolbar削除
     #+END_SRC
 
 *** 起動時のフレーム設定
@@ -46,14 +48,8 @@
                initial-frame-alist)))
       (setq default-frame-alist initial-frame-alist)
     #+END_SRC
-*** フォント・カーソル設定
-**** カーソルの設定
-      #+BEGIN_SRC emacs-lisp
-        (if window-system
-            (progn
-              (set-cursor-color "#525252")
-              (blink-cursor-mode 0)))
-      #+END_SRC
+
+*** フォント設定
 **** フォントの設定
       https://qiita.com/gooichi/items/03789492eec26607e11b
       #+BEGIN_SRC emacs-lisp
@@ -88,14 +84,6 @@
      (set-face-font 'variable-pitch "menlo")
      (add-hook 'dired-mode-hook 'variable-pitch-mode)
      #+END_SRC
-
-*** ツールバーを消す
-    #+BEGIN_SRC emacs-lisp
-      (if window-system
-          (progn
-            (tool-bar-mode -1)
-            ))
-    #+END_SRC
 
 ** 機能系
 *** *.~などのバックアップファイルを作成しない
