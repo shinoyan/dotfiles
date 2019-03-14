@@ -585,7 +585,7 @@
         :config
         (setq-default js2-strict-trailing-comma-warning nil))
     #+END_SRC
-** typescript-mod
+** typescript-mode
 *** ロード処理
     #+begin_src emacs-lisp
     (use-package typescript-mode
